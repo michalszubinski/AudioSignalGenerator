@@ -1,3 +1,6 @@
+import numpy as np
+import scipy
+
 from signals import *
 
 class AudioSignalGenerator:
@@ -38,6 +41,11 @@ class AudioSignalGenerator:
             elif sample < -1:
                 sample = -1
 
-    def save_audio(self,filename): #TODO
-        pass
+    def save_audio(self,filename):
+        #TODO:
+        # * ADD ABILITY TO SAVE MULTICHANNEL WAVE
+        # * ALLOW TO CHANGE BIT DEPTH
+        # maybe helpful: https://stackoverflow.com/questions/33879523/python-how-can-i-generate-a-wav-file-with-beeps
+        self.sample_values = np.array(self.sample_values).astype(np.float32)
+        scipy.io.wavfile.write(filename, int(self.sample_rate), np.array(self.sample_values))
 
