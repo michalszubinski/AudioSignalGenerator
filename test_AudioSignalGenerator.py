@@ -31,15 +31,60 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(audioSignalGenerator.sample_values, [0, 0.5, 0.5, 0.5])
         self.assertEqual(audioSignalGenerator.timestamps, [0, 1, 2, 3])
 
-    def test_generate_sinus_sample_rate_100_amplitude_1_phase_pi(self): #TODO
+    def test_generate_sinus_sample_rate_100_amplitude_1_end_on_sample_100(self):
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
+        sin = SignalPeriodic_Sinus(100, 0, 100, 1, 1, 0)
+        audioSignalGenerator.add_signal(sin)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 101)
+
+        self.assertLess(audioSignalGenerator.sample_values[0], 0.05)
+        self.assertGreater(audioSignalGenerator.sample_values[0], -0.05)
+
+        self.assertLessEqual(audioSignalGenerator.sample_values[25], 1)
+        self.assertGreater(audioSignalGenerator.sample_values[25], 0.95)
+
+        self.assertLess(audioSignalGenerator.sample_values[50], 0.05)
+        self.assertGreater(audioSignalGenerator.sample_values[50], -0.05)
+
+        self.assertLess(audioSignalGenerator.sample_values[75], -0.95)
+        self.assertGreaterEqual(audioSignalGenerator.sample_values[75], -1)
+
+    def test_generate_sinus_sample_rate_100_amplitude_1_end_on_sample_100_phase_pi(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
         sin = SignalPeriodic_Sinus(100, 0, 100, 1, 1, math.pi)
         audioSignalGenerator.add_signal(sin)
         audioSignalGenerator.generate_samples()
 
-        print(audioSignalGenerator.sample_values)
-        #plt.plot(audioSignalGenerator.timestamps, audioSignalGenerator.sample_values)
-        #plt.show()
+        self.assertEqual(len(audioSignalGenerator.timestamps), 101)
+
+        self.assertLessEqual(audioSignalGenerator.sample_values[75], 1)
+        self.assertGreater(audioSignalGenerator.sample_values[75], 0.95)
+
+        self.assertLess(audioSignalGenerator.sample_values[0], 0.05)
+        self.assertGreater(audioSignalGenerator.sample_values[0], -0.05)
+
+        self.assertLess(audioSignalGenerator.sample_values[25], -0.95)
+        self.assertGreaterEqual(audioSignalGenerator.sample_values[25], -1)
+
+        self.assertLess(audioSignalGenerator.sample_values[50], 0.05)
+        self.assertGreater(audioSignalGenerator.sample_values[50], -0.05)
+
+    def test_generate_two_sinus_sample_rate_100_amplitude_1_end_on_sample_100_opposite_phase(self):
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
+        sin1 = SignalPeriodic_Sinus(100, 0, 100, 1, 1, 0)
+        sin2 = SignalPeriodic_Sinus(100, 0, 100, 1, 1, math.pi)
+        audioSignalGenerator.add_signal(sin1)
+        audioSignalGenerator.add_signal(sin2)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 101)
+
+        for sample in audioSignalGenerator.sample_values:
+            self.assertLess(sample, 0.05)
+            self.assertGreater(sample, -0.05)
+
 
 
 if __name__ == '__main__':
