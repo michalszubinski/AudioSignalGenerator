@@ -4,6 +4,8 @@ import unittest
 import AudioSignalGenerator
 from signals.SignalPeriodic_Sinus import SignalPeriodic_Sinus
 from signals.Signal_Constant import Signal_Constant
+from signals.Signal_GaussianWhiteNoise import Signal_GuassianWhiteNoise
+from signals.Signal_UniformWhiteNoise import Signal_UniformWhiteNoise
 
 
 class MyTestCase(unittest.TestCase):
@@ -84,6 +86,26 @@ class MyTestCase(unittest.TestCase):
         for sample in audioSignalGenerator.sample_values:
             self.assertLess(sample, 0.05)
             self.assertGreater(sample, -0.05)
+
+    def test_generate_and_save_as_wav_44100_16_sin_1000hz_1s(self): #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
+        sin = SignalPeriodic_Sinus(44100, 0, 44100, 0.1, 1000, 0)
+        audioSignalGenerator.add_signal(sin)
+        audioSignalGenerator.generate_samples()
+
+        #audioSignalGenerator.save_audio('test.wav')
+
+    def test_generate_uniform_white_noise_44100_16_500_samples(self): #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
+        uniformwhitenoise = Signal_UniformWhiteNoise(44100, 0, 500, 0.1)
+        audioSignalGenerator.add_signal(uniformwhitenoise)
+        audioSignalGenerator.generate_samples()
+
+    def test_generate_gaussian_white_noise_44100_16_500_samples(self): #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
+        guassianwhitenoise = Signal_GuassianWhiteNoise(44100, 0, 500, 0.1)
+        audioSignalGenerator.add_signal(guassianwhitenoise)
+        audioSignalGenerator.generate_samples()
 
 
 
