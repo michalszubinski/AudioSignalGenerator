@@ -1,3 +1,4 @@
+import math
 from abc import ABC, abstractmethod
 
 class Signal(ABC):
@@ -29,5 +30,20 @@ class Signal(ABC):
         self.sample_values.clear()
         self.timestamps.clear()
 
-    def calculate_rms(self): #TODO
-        return 1.0
+    def calculate_rms(self):
+        return self.calculate_rms_timeframe(self.start_on_sample, self.end_on_sample)
+
+    def calculate_rms_timeframe(self, rms_timeframe_start, rms_timeframe_end):
+        try:
+            current_sample = rms_timeframe_start
+
+            rms = 0
+
+            while current_sample <= rms_timeframe_end:
+                rms += self.sample_values[current_sample]^2
+                current_sample += 1
+            rms = math.sqrt(rms)
+            return rms
+        except:
+            print('Error in calculating rms timeframe - signals/Signal.py')
+            return None
