@@ -1,5 +1,10 @@
 import math
+import os
 import unittest
+import wave
+
+import numpy as np
+import scipy
 
 import AudioSignalGenerator
 from signals.SignalPeriodic_Sinus import SignalPeriodic_Sinus
@@ -87,13 +92,27 @@ class MyTestCase(unittest.TestCase):
             self.assertLess(sample, 0.05)
             self.assertGreater(sample, -0.05)
 
-    def test_generate_and_save_as_wav_44100_16_sin_1000hz_1s(self): #TODO
+    def test_generate_and_save_as_wav_44100_16_sin_1000hz_1s_mono(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
         sin = SignalPeriodic_Sinus(44100, 0, 44100, 0.1, 1000, 0)
         audioSignalGenerator.add_signal(sin)
         audioSignalGenerator.generate_samples()
 
-        #audioSignalGenerator.save_audio('test.wav')
+        filename = 'test_generate_and_save_as_wav_44100_16_sin_1000hz_1s_mono.wav'
+
+        audioSignalGenerator.save_audio(filename)
+        self.assertTrue(os.path.exists(filename))
+
+        wav_file = wave.open(filename, 'r') # OPEN FILE
+
+        self.assertEqual(wav_file.getnchannels(), 1)
+        self.assertEqual(wav_file.getframerate(), 44100)
+        self.assertEqual(wav_file.getsampwidth(), 2)
+        self.assertEqual(wav_file.getnframes(), 44101) # number of frames
+
+        wav_file.close() # CLOSE FILE
+
+        os.remove(filename) # REMOVE FILE
 
     def test_generate_uniform_white_noise_44100_16_500_samples(self): #TODO
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
@@ -106,6 +125,22 @@ class MyTestCase(unittest.TestCase):
         guassianwhitenoise = Signal_GuassianWhiteNoise(44100, 0, 500, 0.1)
         audioSignalGenerator.add_signal(guassianwhitenoise)
         audioSignalGenerator.generate_samples()
+
+    def test_calculate_rms_sin_1k_01_amp_1s(self): #TODO
+        pass
+
+    def test_calculate_rms_constant_signal_1000_samples(self): #TODO
+        pass
+
+    def test_convert_linear_to_dbfs_value_1(self): #TODO
+        pass
+
+    def test_convert_linear_to_dbfs_value_05(self): #TODO
+        pass
+
+    def test_convert_linear_to_dbfs_value_025(self): #TODO
+        pass
+
 
 
 
