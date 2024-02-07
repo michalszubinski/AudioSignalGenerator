@@ -11,6 +11,7 @@ from signals.SignalPeriodic_Sinus import SignalPeriodic_Sinus
 from signals.Signal_Constant import Signal_Constant
 from signals.Signal_GaussianWhiteNoise import Signal_GuassianWhiteNoise
 from signals.Signal_UniformWhiteNoise import Signal_UniformWhiteNoise
+from utilities.Converter import Converter
 
 
 class MyTestCase(unittest.TestCase):
@@ -110,6 +111,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(wav_file.getsampwidth(), 2)
         self.assertEqual(wav_file.getnframes(), 44101) # number of frames
 
+        # Check if samples are similar
+
         wav_file.close() # CLOSE FILE
 
         os.remove(filename) # REMOVE FILE
@@ -132,14 +135,31 @@ class MyTestCase(unittest.TestCase):
     def test_calculate_rms_constant_signal_1000_samples(self): #TODO
         pass
 
-    def test_convert_linear_to_dbfs_value_1(self): #TODO
-        pass
+    def test_convert_linear_to_dbfs_value_1(self):
+        temp_dbfs = Converter.linear_to_dbfs(1)
+        self.assertLessEqual(temp_dbfs.DBFS,0.01)
+        self.assertGreaterEqual(temp_dbfs.DBFS,-0.01)
+        self.assertEqual(temp_dbfs.sign, 1)
 
-    def test_convert_linear_to_dbfs_value_05(self): #TODO
-        pass
+    def test_convert_linear_to_dbfs_value_negative_1(self):
+        temp_dbfs = Converter.linear_to_dbfs(-1)
+        self.assertLessEqual(temp_dbfs.DBFS,0.01)
+        self.assertGreaterEqual(temp_dbfs.DBFS,-0.01)
+        self.assertEqual(temp_dbfs.sign, -1)
 
-    def test_convert_linear_to_dbfs_value_025(self): #TODO
-        pass
+
+    def test_convert_linear_to_dbfs_value_05(self):
+        temp_dbfs = Converter.linear_to_dbfs(0.5)
+        self.assertLessEqual(temp_dbfs.DBFS, 5.97)
+        self.assertGreaterEqual(temp_dbfs.DBFS, -6.03)
+        self.assertEqual(temp_dbfs.sign, 1)
+
+
+    def test_convert_linear_to_dbfs_value_025(self):
+        temp_dbfs = Converter.linear_to_dbfs(0.25)
+        self.assertLessEqual(temp_dbfs.DBFS, 11.95)
+        self.assertGreaterEqual(temp_dbfs.DBFS, -12.05)
+        self.assertEqual(temp_dbfs.sign, 1)
 
 
 
