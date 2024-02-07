@@ -7,13 +7,15 @@ class Converter:
     def __init__(self):
         pass
 
-    def linear_to_dbfs_bits(self,value,bit_depth):
+    @staticmethod
+    def linear_to_dbfs_bits(value,bit_depth):
         valueDBFS = 20 * math.log10(abs(value)/bit_depth)
         sign = 1
-        if valueDBFS < 0:
+        if value < 0:
             sign = -1
 
         return DBFS(valueDBFS, sign)
 
-    def linear_to_dbfs(self,value):
-        return self.linear_to_dbfs_bits(value,1)
+    @staticmethod
+    def linear_to_dbfs(value):
+        return Converter.linear_to_dbfs_bits(value,1)
