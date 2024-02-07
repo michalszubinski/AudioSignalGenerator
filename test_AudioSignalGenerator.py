@@ -15,6 +15,7 @@ from utilities.Converter import Converter
 
 
 class MyTestCase(unittest.TestCase):
+    # Generating signals
     def test_generate_signal_constant_in_range_1_3_check_amplitude_and_length(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
         const = Signal_Constant(44100, 1, 3, 0.2)
@@ -93,6 +94,28 @@ class MyTestCase(unittest.TestCase):
             self.assertLess(sample, 0.05)
             self.assertGreater(sample, -0.05)
 
+    # Generate noises
+    def test_generate_uniform_white_noise_44100_16_500_samples(self): #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
+        uniformwhitenoise = Signal_UniformWhiteNoise(44100, 0, 500, 0.1)
+        audioSignalGenerator.add_signal(uniformwhitenoise)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.sample_values), 501)
+        # find the conditions to check if the noise is correct
+
+
+    def test_generate_gaussian_white_noise_44100_16_500_samples(self): #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
+        guassianwhitenoise = Signal_GuassianWhiteNoise(44100, 0, 500, 0.1)
+        audioSignalGenerator.add_signal(guassianwhitenoise)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.sample_values), 501)
+        # find the conditions to check if the noise is correct
+
+
+    # Save file
     def test_generate_and_save_as_wav_44100_16_sin_1000hz_1s_mono(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
         sin = SignalPeriodic_Sinus(44100, 0, 44100, 0.1, 1000, 0)
@@ -117,24 +140,31 @@ class MyTestCase(unittest.TestCase):
 
         os.remove(filename) # REMOVE FILE
 
-    def test_generate_uniform_white_noise_44100_16_500_samples(self): #TODO
+    # Signals and RMS
+    def test_calculate_rms_sin_1k_1_amp_1s(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
-        uniformwhitenoise = Signal_UniformWhiteNoise(44100, 0, 500, 0.1)
-        audioSignalGenerator.add_signal(uniformwhitenoise)
+        sin = SignalPeriodic_Sinus(44100, 0, 44100, 1, 1000, 0)
+        audioSignalGenerator.add_signal(sin)
         audioSignalGenerator.generate_samples()
 
-    def test_generate_gaussian_white_noise_44100_16_500_samples(self): #TODO
+        rms = sin.calculate_rms()
+        # sqrt(2) = 0.70710678
+        self.assertLessEqual(rms, 0.7071 + 0.02)
+        self.assertGreaterEqual(rms, 0.7071 - 0.02)
+
+    def test_calculate_rms_constant_signal_1000_samples(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
-        guassianwhitenoise = Signal_GuassianWhiteNoise(44100, 0, 500, 0.1)
-        audioSignalGenerator.add_signal(guassianwhitenoise)
+        const = Signal_Constant(44100, 0, 1000, 0.5)
+        audioSignalGenerator.add_signal(const)
         audioSignalGenerator.generate_samples()
 
-    def test_calculate_rms_sin_1k_01_amp_1s(self): #TODO
-        pass
+        rms = const.calculate_rms()
 
-    def test_calculate_rms_constant_signal_1000_samples(self): #TODO
-        pass
+        self.assertLessEqual(rms, 0.5 + 0.01)
+        self.assertGreaterEqual(rms, 0.5 - 0.01)
+        self.assertEqual(rms, 0.5)
 
+    # Convertion
     def test_convert_linear_to_dbfs_value_1(self):
         temp_dbfs = Converter.linear_to_dbfs(1)
         self.assertLessEqual(temp_dbfs.DBFS,0.01)
