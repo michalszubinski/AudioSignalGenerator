@@ -1,6 +1,7 @@
 import math
 from abc import ABC, abstractmethod
 
+
 class Signal(ABC):
 
     def __init__(self, sample_rate, start_on_sample, end_on_sample, max_amplitude):
@@ -20,7 +21,6 @@ class Signal(ABC):
         current_sample_time = self.start_on_sample
 
         while current_sample_time <= self.end_on_sample:
-
             self.timestamps.append(current_sample_time)
             self.sample_values.append(self.generate_sample_value(current_sample_time))
 
@@ -40,10 +40,11 @@ class Signal(ABC):
             rms = 0
 
             while current_sample <= rms_timeframe_end:
-                rms += self.sample_values[current_sample]^2
+                rms += pow(self.sample_values[current_sample], 2)
                 current_sample += 1
-            rms = math.sqrt(rms)
+            rms = math.sqrt(rms/(rms_timeframe_end - rms_timeframe_start + 1))
             return rms
-        except:
+        except Exception as e:
+            print(e)
             print('Error in calculating rms timeframe - signals/Signal.py')
             return None
