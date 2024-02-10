@@ -12,6 +12,7 @@ from signals.Signal_Constant import Signal_Constant
 from signals.Signal_GaussianWhiteNoise import Signal_GuassianWhiteNoise
 from signals.Signal_UniformWhiteNoise import Signal_UniformWhiteNoise
 from utilities.Converter import Converter
+from utilities.DBFS import DBFS
 
 
 class MyTestCase(unittest.TestCase):
@@ -191,6 +192,50 @@ class MyTestCase(unittest.TestCase):
         self.assertGreaterEqual(temp_dbfs.DBFS, -12.05)
         self.assertEqual(temp_dbfs.sign, 1)
 
+    def test_convert_dbfs_to_linear_value_0(self):
+        temp_linear = Converter.dbfs_to_linear(DBFS(0))
+        self.assertEqual(temp_linear, 1)
+
+    def test_convert_dbfs_to_linear_value_0_sign_negative(self):
+        temp_linear = Converter.dbfs_to_linear(DBFS(0,-1))
+        self.assertEqual(temp_linear, -1)
+
+    def test_convert_dbfs_to_linear_value_minus3_sign_negative(self):
+        temp_linear = Converter.dbfs_to_linear(DBFS(-3,-1))
+        self.assertLessEqual(temp_linear, -0.7071 + 0.01)
+        self.assertGreaterEqual(temp_linear, -0.7071 - 0.01)
+
+    def test_convert_dbfs_to_linear_value_minus6(self):
+        temp_linear = Converter.dbfs_to_linear(DBFS(-6))
+        self.assertLessEqual(temp_linear, 0.51)
+        self.assertGreaterEqual(temp_linear, 0.49)
+
+    def test_convert_linear_to_dbfs_bits_value_32768_bits_16(self): #TODO
+        pass
+
+    def test_convert_linear_to_dbfs_bits_value_16384_bits_16(self): #TODO
+        pass
+
+    def test_convert_linear_to_dbfs_bits_value_minus16384_bits_16(self): #TODO
+        pass
+
+    def test_convert_dbfs_to_linear_value_0_bits_16(self): #TODO
+        temp_linear = Converter.dbfs_to_linear(DBFS(0))
+        self.assertEqual(temp_linear, 1)
+
+    def test_convert_dbfs_to_linear_value_0_sign_negative_bits_16(self): #TODO
+        temp_linear = Converter.dbfs_to_linear(DBFS(0,-1))
+        self.assertEqual(temp_linear, -1)
+
+    def test_convert_dbfs_to_linear_value_minus3_sign_negative_bits_16(self): #TODO
+        temp_linear = Converter.dbfs_to_linear(DBFS(-3,-1))
+        self.assertLessEqual(temp_linear, -0.7071 + 0.01)
+        self.assertGreaterEqual(temp_linear, -0.7071 - 0.01)
+
+    def test_convert_dbfs_to_linear_value_minus6_bits_16(self): #TODO
+        temp_linear = Converter.dbfs_to_linear(DBFS(-6))
+        self.assertLessEqual(temp_linear, 0.51)
+        self.assertGreaterEqual(temp_linear, 0.49)
 
 
 
