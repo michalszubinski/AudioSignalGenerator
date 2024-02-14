@@ -55,13 +55,29 @@ class AudioSignalGenerator:
         self.sample_values = np.array(self.sample_values).astype(np.float32)
         scipy.io.wavfile.write(filename, int(self.sample_rate), np.array(self.sample_values))
         """
+        #maybe use wave module? https://stackoverflow.com/questions/16767248/how-do-i-write-a-24-bit-wav-file-in-python
 
         new_sample_list = list()
 
         for sample in self.sample_values:
             new_sample_list.append(sample * (math.pow(2,(self.bit_depth - 1) - 1)))
 
-        new_sample_list = np.array(new_sample_list).astype(np.int16)
+        if self.bit_depth == 16:
+            new_sample_list = np.array(new_sample_list).astype(np.int16)
+        elif self.bit_depth == 24: #TODO: SAVES AS 32 FOR NOW
+            print('24 bit option unsupported currently. Saving 24 bit signal to 32 bit PCM...')
+            new_sample_list = np.array(new_sample_list).astype(np.int32)
+        elif self.bit_depth == 32:
+            new_sample_list = np.array(new_sample_list).astype(np.int32)
+        elif self.bit_depth == 8:
+            sample_list_8_bit = list()
+            for sample in new_sample_list:
+                sample_list_8_bit.append(sample + 128)
+            new_sample_list = np.array(sample_list_8_bit).astype(np.uint8)
+        else:
+            print('Unsupported bit depth! Currently supported are: 8, 16, 32 bits')
+            return
+
 
         scipy.io.wavfile.write(filename, int(self.sample_rate), np.array(new_sample_list))
 
