@@ -21,10 +21,15 @@ class Signal(ABC):
         current_sample_time = self.start_on_sample
 
         while current_sample_time <= self.end_on_sample:
-            self.timestamps.append(current_sample_time)
-            self.sample_values.append(self.generate_sample_value(current_sample_time))
+            self.change_values_before_generating_a_sample(current_sample_time)
+            current_sample_time = self.generate_single_sample_in_the_loop(current_sample_time)
 
-            current_sample_time += 1
+    def generate_single_sample_in_the_loop(self, current_sample_time):
+        self.timestamps.append(current_sample_time)
+        self.sample_values.append(self.generate_sample_value(current_sample_time))
+
+        current_sample_time += 1
+        return current_sample_time
 
     def clear(self):
         self.sample_values.clear()
@@ -48,3 +53,6 @@ class Signal(ABC):
             print(e)
             print('Error in calculating rms timeframe - signals/Signal.py')
             return None
+
+    def change_values_before_generating_a_sample(self, current_sample_time):
+        pass

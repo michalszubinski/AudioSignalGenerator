@@ -19,8 +19,8 @@ class Signal_UniformPinkNoise(Signal):
         whitenoise = Signal_UniformWhiteNoise(self.sample_rate, self.start_on_sample, self.end_on_sample, self.max_amplitude)
         whitenoise.generate()
 
-        plt.plot(np.fft.rfftfreq(len(whitenoise.sample_values)), np.fft.rfft(whitenoise.sample_values))
-        plt.show()
+        #plt.plot(np.fft.rfftfreq(len(whitenoise.sample_values)), np.fft.rfft(whitenoise.sample_values))
+        #plt.show()
 
         #EQ
 
