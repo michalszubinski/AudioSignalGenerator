@@ -37,6 +37,19 @@ class Signal_UniformPinkNoise(Signal):
         pinknoise_fft = fft_whitenoise * S
 
         pinknoise = np.fft.irfft(pinknoise_fft)
+
+        # NORMALIZE
+        flatten_pinknoise = list(pinknoise.flatten())
+        max_sample = max(flatten_pinknoise)
+        min_sample = min(flatten_pinknoise)
+        abs_max_sample = max_sample
+
+        if max_sample < abs(min_sample):
+            abs_max_sample = abs(min_sample)
+
+
+
+        pinknoise = pinknoise * (self.max_amplitude/abs_max_sample)
         #for sample in pinknoise:
         #    self.sample_values.append(sample.real)
         """
@@ -51,4 +64,5 @@ class Signal_UniformPinkNoise(Signal):
 
         self.sample_values = list(pinknoise.flatten())
         self.sample_values.append(self.sample_values[-1])
+
 
