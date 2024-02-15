@@ -13,10 +13,18 @@ from signals.SignalPeriodic_Square import SignalPeriodic_Square
 from signals.SignalPeriodic_Triangle import SignalPeriodic_Triangle
 from signals.Signal_Constant import Signal_Constant
 from signals.Signal_GaussianWhiteNoise import Signal_GuassianWhiteNoise
+from signals.Signal_UniformPinkNoise import Signal_UniformPinkNoise
 from signals.Signal_UniformWhiteNoise import Signal_UniformWhiteNoise
 from utilities.Converter import Converter
 from utilities.DBFS import DBFS
 
+# TESTS TO ADD:
+# * PERIODIC FUNCTIONS PHASE, AMPLITUDE: TRIANGLE, SQUARE, SAWTOOTH
+# * SAVING 8, 24, 32 WAV PCM
+# * NOISES
+# * CHECK FOR CLIPPING
+# * MULTICHANNEL [WHEN ADDED LATER]
+# *
 
 class MyTestCase(unittest.TestCase):
     # Generating signals
@@ -98,23 +106,55 @@ class MyTestCase(unittest.TestCase):
             self.assertLess(sample, 0.05)
             self.assertGreater(sample, -0.05)
 
-    def test_generate_square_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_2hz(self): #TODO
+    def test_generate_square_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_2hz(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
         square = SignalPeriodic_Square(44100, 0, 44100, 1, 2, 0)
         audioSignalGenerator.add_signal(square)
         audioSignalGenerator.generate_samples()
 
-    def test_square_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_2hz(self): #TODO
+        self.assertEqual(len(audioSignalGenerator.timestamps), 44101)
+
+        self.assertEqual(square.calculate_rms(), 1) # RMS
+
+        self.assertEqual(square.sample_values[11_025], 1) # VALUES
+        self.assertEqual(square.sample_values[11_026], -1)
+        self.assertEqual(square.sample_values[22_050], -1)
+        self.assertEqual(square.sample_values[22_051], 1)
+
+
+    def test_square_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_1hz(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
-        triangle = SignalPeriodic_Triangle(44100, 0, 44100, 1, 2, 0)
+        triangle = SignalPeriodic_Triangle(44100, 0, 44100, 1, 1, 0)
         audioSignalGenerator.add_signal(triangle)
         audioSignalGenerator.generate_samples()
 
-    def test_sawtooth_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_2hz(self): #TODO
+        self.assertEqual(len(audioSignalGenerator.timestamps), 44101)
+
+        self.assertLessEqual(triangle.calculate_rms(), (1/math.sqrt(3))+0.01) # RMS
+        self.assertGreaterEqual(triangle.calculate_rms(), (1/math.sqrt(3))-0.01) # RMS
+
+        # VALUES
+        self.assertEqual(triangle.sample_values[0], 0)
+        self.assertEqual(triangle.sample_values[11_025], 1)
+        self.assertEqual(triangle.sample_values[22_050], 0)
+        self.assertEqual(triangle.sample_values[33_075], -1)
+        self.assertEqual(triangle.sample_values[44_100], 0)
+
+
+
+    def test_sawtooth_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_2hz(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
         sawtooth = SignalPeriodic_Sawtooth(44100, 0, 44100, 1, 2, 0)
         audioSignalGenerator.add_signal(sawtooth)
         audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 44101)
+
+        # VALUES
+        self.assertEqual(sawtooth.sample_values[0], -1)
+        self.assertEqual(sawtooth.sample_values[11_025], 0)
+        self.assertGreaterEqual(sawtooth.sample_values[22_049], 0.999)
+
 
 
     # Generate noises
@@ -135,6 +175,17 @@ class MyTestCase(unittest.TestCase):
         audioSignalGenerator.generate_samples()
 
         self.assertEqual(len(audioSignalGenerator.sample_values), 501)
+        # find the conditions to check if the noise is correct
+
+    def test_generate_uniform_pink_noise_44100_16_500_samples(self): #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
+        uniformpinknoise = Signal_UniformPinkNoise(44100, 0, 44100 * 4, 1)
+        audioSignalGenerator.add_signal(uniformpinknoise)
+        audioSignalGenerator.generate_samples()
+
+        # print(audioSignalGenerator.sample_values)
+        #plt.plot(audioSignalGenerator.timestamps, audioSignalGenerator.sample_values)
+        #plt.show()
         # find the conditions to check if the noise is correct
 
 
