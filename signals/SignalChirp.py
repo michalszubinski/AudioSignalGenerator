@@ -12,13 +12,12 @@ class SignalChirp(Signal, ABC):
         self.frequency_variation = frequency_variation  # lin, log, exp, hyp
         self.initial_frequency_change = initial_frequency_change  # slow-fast, fast-slow
         self.start_on_min_frequency = start_on_min_frequency
-        self.current_frequency = 0
+        self.current_frequency = min_frequency
         self.delta_frequency_lin = (self.max_frequency - self.min_frequency) / (self.end_on_sample - self.start_on_sample)
 
         if start_on_min_frequency:
-            self.current_frequency = self.min_frequency
+            pass
         else:
-            self.current_frequency = self.max_frequency
             if self.initial_frequency_change == 'slow-fast':
                 self.initial_frequency_change = 'fast-slow'
             if self.initial_frequency_change == 'fast-slow':
@@ -31,6 +30,7 @@ class SignalChirp(Signal, ABC):
         if self.frequency_variation == 'lin':
             self.current_frequency += self.delta_frequency_lin
 
-    def post_sample_generator(self):
+    def post_sample_generation(self):
         if not self.start_on_min_frequency:
-            self.sample_values = self.sample_values[::-1]
+            #self.sample_values = self.sample_values[::-1]
+            self.sample_values = [-value for value in self.sample_values[::-1]] # MULTIPIES -1 AND REVERSES THE LIST
