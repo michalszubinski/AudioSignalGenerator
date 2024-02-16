@@ -23,6 +23,8 @@ class Signal(ABC):
         while current_sample_time <= self.end_on_sample:
             self.change_values_before_generating_a_sample(current_sample_time)
             current_sample_time = self.generate_single_sample_in_the_loop(current_sample_time)
+            self.change_values_after_generating_a_sample(current_sample_time)
+        self.post_sample_generation()
 
     def generate_single_sample_in_the_loop(self, current_sample_time):
         self.timestamps.append(current_sample_time)
@@ -55,4 +57,10 @@ class Signal(ABC):
             return None
 
     def change_values_before_generating_a_sample(self, current_sample_time):
+        pass
+
+    def post_sample_generation(self):
+        pass
+
+    def change_values_after_generating_a_sample(self, current_sample_time):
         pass
