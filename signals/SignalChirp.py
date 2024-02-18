@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+
+import numpy as np
+
 from signals.Signal import Signal
 
 
@@ -14,6 +17,8 @@ class SignalChirp(Signal, ABC):
         self.start_on_min_frequency = start_on_min_frequency
         self.current_frequency = min_frequency
         self.delta_frequency_lin = (self.max_frequency - self.min_frequency) / (self.end_on_sample - self.start_on_sample)
+        self.fixed_frequency_list = list()
+        self.fixed_frequency_list_position = 0
 
         if start_on_min_frequency:
             pass
@@ -23,12 +28,20 @@ class SignalChirp(Signal, ABC):
             if self.initial_frequency_change == 'fast-slow':
                 self.initial_frequency_change = 'slow-fast'
 
+        if self.frequency_variation == 'log':
+            self.fixed_frequency_list = np.geomspace(min_frequency, max_frequency, end_on_sample - start_on_sample + 1)
+
     def change_values_after_generating_a_sample(self, current_sample_time):
         # TODO:
         # Calculate frequency change based on linear, logarithmic, exponential or hyperbolic functions
         # Calculate frequency based on direction ('slow-fast', 'fast-slow')
         if self.frequency_variation == 'lin':
             self.current_frequency += self.delta_frequency_lin
+        if self.frequency_variation == 'log':
+            self.current_frequency = self.fixed_frequency_list[self.fixed_frequency_list_position]
+            self.fixed_frequency_list_position += 1
+
+
 
     def post_sample_generation(self):
         if not self.start_on_min_frequency:
