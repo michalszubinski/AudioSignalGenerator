@@ -29,3 +29,11 @@ class Converter:
         linear_value = pow(10, dbfs.DBFS/20)*pow(2,bit_depth-1)
         linear_value *= dbfs.sign
         return linear_value
+
+    @staticmethod
+    def samples_to_seconds(samples,sample_rate):
+        return samples/sample_rate
+
+    @staticmethod
+    def seconds_to_samples(seconds,sample_rate):
+        return seconds*sample_rate
