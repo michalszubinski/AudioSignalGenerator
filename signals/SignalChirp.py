@@ -8,25 +8,18 @@ from signals.Signal import Signal
 class SignalChirp(Signal, ABC):
 
     def __init__(self, sample_rate, start_on_sample, end_on_sample, max_amplitude, min_frequency, max_frequency,
-                 frequency_variation='lin', initial_frequency_change='slow-fast', start_on_min_frequency=True):
+                 frequency_variation='lin', start_on_min_frequency=True):
         super().__init__(sample_rate, start_on_sample, end_on_sample, max_amplitude)
         self.min_frequency = min_frequency
         self.max_frequency = max_frequency
         self.frequency_variation = frequency_variation  # lin, log, exp, hyp
-        self.initial_frequency_change = initial_frequency_change  # slow-fast, fast-slow
         self.start_on_min_frequency = start_on_min_frequency
         self.current_frequency = min_frequency
         self.delta_frequency_lin = (self.max_frequency - self.min_frequency) / (self.end_on_sample - self.start_on_sample)
         self.fixed_frequency_list = list()
         self.fixed_frequency_list_position = 0
 
-        if start_on_min_frequency:
-            pass
-        else:
-            if self.initial_frequency_change == 'slow-fast':
-                self.initial_frequency_change = 'fast-slow'
-            if self.initial_frequency_change == 'fast-slow':
-                self.initial_frequency_change = 'slow-fast'
+
 
         if self.frequency_variation == 'log':
             self.fixed_frequency_list = np.geomspace(min_frequency, max_frequency, end_on_sample - start_on_sample + 1)
