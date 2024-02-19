@@ -7,6 +7,7 @@ import numpy as np
 import scipy
 
 import AudioSignalGenerator
+from signals.SignalChirp_Sinus import SignalChirp_Sinus
 from signals.SignalPeriodic_Sawtooth import SignalPeriodic_Sawtooth
 from signals.SignalPeriodic_Sinus import SignalPeriodic_Sinus
 from signals.SignalPeriodic_Square import SignalPeriodic_Square
@@ -15,6 +16,7 @@ from signals.Signal_Constant import Signal_Constant
 from signals.Signal_GaussianWhiteNoise import Signal_GuassianWhiteNoise
 from signals.Signal_UniformPinkNoise import Signal_UniformPinkNoise
 from signals.Signal_UniformWhiteNoise import Signal_UniformWhiteNoise
+from utilities.Calculator import Calculator
 from utilities.Converter import Converter
 from utilities.DBFS import DBFS
 
@@ -72,6 +74,19 @@ class MyTestCase(unittest.TestCase):
         self.assertLess(audioSignalGenerator.sample_values[75], -0.95)
         self.assertGreaterEqual(audioSignalGenerator.sample_values[75], -1)
 
+    def test_generate_sinus_sample_rate_48000_amplitude_1_duration_1s_frequency_1khz(self):
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        sin = SignalPeriodic_Sinus(48000, 0, 48000, 1, 1000, 0)
+        audioSignalGenerator.add_signal(sin)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 48001)
+
+        self.assertLessEqual(Calculator.get_signal_frequency(sin), 1010)
+        self.assertGreaterEqual(Calculator.get_signal_frequency(sin), 990)
+
+
+
     def test_generate_sinus_sample_rate_100_amplitude_1_end_on_sample_100_phase_pi(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
         sin = SignalPeriodic_Sinus(100, 0, 100, 1, 1, math.pi)
@@ -121,8 +136,21 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(square.sample_values[22_050], -1)
         self.assertEqual(square.sample_values[22_051], 1)
 
+    def test_generate_square_sample_rate_48000_amplitude_1_duration_1s_frequency_2khz(self):
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        square = SignalPeriodic_Square(48000, 0, 48000, 1, 2000, 0)
+        audioSignalGenerator.add_signal(square)
+        audioSignalGenerator.generate_samples()
 
-    def test_square_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_1hz(self):
+        self.assertEqual(len(audioSignalGenerator.timestamps), 48001)
+
+        self.assertLessEqual(Calculator.get_signal_frequency(square), 2010)
+        self.assertGreaterEqual(Calculator.get_signal_frequency(square), 1990)
+
+
+
+
+    def test_triangle_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_1hz(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
         triangle = SignalPeriodic_Triangle(44100, 0, 44100, 1, 1, 0)
         audioSignalGenerator.add_signal(triangle)
@@ -140,6 +168,17 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(triangle.sample_values[33_075], -1)
         self.assertEqual(triangle.sample_values[44_100], 0)
 
+    def test_triangle_sample_rate_48000_amplitude_1_duration_1s_frequency_800hz(self):
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        triangle = SignalPeriodic_Triangle(48000, 0, 48000, 1, 800, 0)
+        audioSignalGenerator.add_signal(triangle)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 48001)
+
+        self.assertLessEqual(Calculator.get_signal_frequency(triangle), 810)
+        self.assertGreaterEqual(Calculator.get_signal_frequency(triangle), 790)
+
 
 
     def test_sawtooth_sample_rate_44100_amplitude_1_end_on_sample_44100_frequency_2hz(self):
@@ -155,6 +194,41 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(sawtooth.sample_values[11_025], 0)
         self.assertGreaterEqual(sawtooth.sample_values[22_049], 0.999)
 
+    def test_sawtooth_sample_rate_48000_amplitude_1_duration_1s_frequency_2400hz(self):
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        sawtooth = SignalPeriodic_Sawtooth(48000, 0, 48000, 1, 2400, 0)
+        audioSignalGenerator.add_signal(sawtooth)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 48001)
+
+        self.assertLessEqual(Calculator.get_signal_frequency(sawtooth), 2410 * 6) # it catches one of the harmonic frequencies
+        self.assertGreaterEqual(Calculator.get_signal_frequency(sawtooth), 2390 * 6)
+
+
+    # Generate chirp
+    def test_generate_chirp_sinus_sample_rate_44100_amplitude_1_end_on_sample_44100_min_frequency_1hz_max_frequency_20hz_linear(self):
+        #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
+        sinchirplin = SignalChirp_Sinus(44100, 0, 44100, 1, 1, 20)
+        audioSignalGenerator.add_signal(sinchirplin)
+        audioSignalGenerator.generate_samples()
+
+    def test_generate_chirp_sinus_sample_rate_44100_amplitude_1_end_on_sample_44100_min_frequency_1hz_max_frequency_20hz_linear_start_max_freq(self):
+        #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
+        sinchirplin_frommax = SignalChirp_Sinus(44100, 0, 44100, 1,
+                                                1, 20, start_on_min_frequency=False)
+        audioSignalGenerator.add_signal(sinchirplin_frommax)
+        audioSignalGenerator.generate_samples()
+
+    def test_generate_chirp_sinus_sample_rate_44100_amplitude_1_end_on_sample_44100_min_frequency_1hz_max_frequency_20hz_log(self):
+        #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
+        sinchirplin_frommax = SignalChirp_Sinus(44100, 0, 44100, 1,
+                                                1, 20, frequency_variation='log')
+        audioSignalGenerator.add_signal(sinchirplin_frommax)
+        audioSignalGenerator.generate_samples()
 
 
     # Generate noises
@@ -286,7 +360,7 @@ class MyTestCase(unittest.TestCase):
         self.assertGreaterEqual(rms, 0.5 - 0.01)
         self.assertEqual(rms, 0.5)
 
-    # Convertion
+    # Conversion
     def test_convert_linear_to_dbfs_value_1(self):
         temp_dbfs = Converter.linear_to_dbfs(1)
         self.assertLessEqual(temp_dbfs.DBFS,0.01)
