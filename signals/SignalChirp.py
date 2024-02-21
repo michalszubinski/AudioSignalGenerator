@@ -15,14 +15,21 @@ class SignalChirp(Signal, ABC):
         self.frequency_variation = frequency_variation  # lin, log, exp, hyp
         self.start_on_min_frequency = start_on_min_frequency
         self.current_frequency = min_frequency
-        self.delta_frequency_lin = (self.max_frequency - self.min_frequency) / (self.end_on_sample - self.start_on_sample)
+        self.delta_frequency_lin = 0
         self.fixed_frequency_list = list()
         self.fixed_frequency_list_position = 0
 
+        self.clear()
 
+    def clear(self):
+        self.sample_values.clear()
+        self.timestamps.clear()
 
+        self.fixed_frequency_list_position = 0
+
+        self.delta_frequency_lin = (self.max_frequency - self.min_frequency) / (self.end_on_sample - self.start_on_sample)
         if self.frequency_variation == 'log':
-            self.fixed_frequency_list = np.geomspace(min_frequency, max_frequency, end_on_sample - start_on_sample + 1)
+            self.fixed_frequency_list = np.geomspace(self.min_frequency, self.max_frequency, self.end_on_sample - self.start_on_sample + 1)
 
     def change_values_after_generating_a_sample(self, current_sample_time):
         # TODO:
