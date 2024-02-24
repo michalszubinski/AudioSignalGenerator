@@ -1,6 +1,8 @@
 import math
 from abc import ABC, abstractmethod
 
+from utilities.Calculator import Calculator
+
 
 class Signal(ABC):
 
@@ -77,3 +79,6 @@ class Signal(ABC):
             abs_max_sample = abs(min_sample)
 
         self.sample_values = self.sample_values * (self.max_amplitude/abs_max_sample)
+
+    def get_frequency(self):
+        return Calculator.get_signal_frequency(self)
