@@ -11,6 +11,7 @@ class Signal(ABC):
         self.max_amplitude = max_amplitude
         self.sample_values = []
         self.timestamps = []
+        self.forced_normalization = False
 
     @abstractmethod
     def generate_sample_value(self, current_sample_time):
@@ -25,6 +26,9 @@ class Signal(ABC):
             current_sample_time = self.generate_single_sample_in_the_loop(current_sample_time)
             self.change_values_after_generating_a_sample(current_sample_time)
         self.post_sample_generation()
+
+        if self.forced_normalization:
+            self.normalize()
 
     def generate_single_sample_in_the_loop(self, current_sample_time):
         self.timestamps.append(current_sample_time)
@@ -64,3 +68,12 @@ class Signal(ABC):
 
     def change_values_after_generating_a_sample(self, current_sample_time):
         pass
+    def normalize(self):
+        max_sample = max(self.sample_values)
+        min_sample = min(self.sample_values)
+        abs_max_sample = max_sample
+
+        if max_sample < abs(min_sample):
+            abs_max_sample = abs(min_sample)
+
+        self.sample_values = self.sample_values * (self.max_amplitude/abs_max_sample)
