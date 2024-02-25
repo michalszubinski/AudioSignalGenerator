@@ -21,6 +21,7 @@ from utilities.Converter import Converter
 from utilities.DBFS import DBFS
 
 # TESTS TO ADD:
+# * NORMALIZATION USING normalize IN Signal.py
 # * PERIODIC FUNCTIONS PHASE, AMPLITUDE: TRIANGLE, SQUARE, SAWTOOTH
 # * SAVING 8, 24, 32 WAV PCM
 # * NOISES
@@ -206,6 +207,9 @@ class MyTestCase(unittest.TestCase):
         self.assertGreaterEqual(Calculator.get_signal_frequency(sawtooth), 2390 * 6)
 
 
+
+
+
     # Generate chirp
     def test_generate_chirp_sinus_sample_rate_44100_amplitude_1_end_on_sample_44100_min_frequency_1hz_max_frequency_20hz_linear(self):
         #TODO
@@ -213,6 +217,8 @@ class MyTestCase(unittest.TestCase):
         sinchirplin = SignalChirp_Sinus(44100, 0, 44100, 1, 1, 20)
         audioSignalGenerator.add_signal(sinchirplin)
         audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 44101)
 
     def test_generate_chirp_sinus_sample_rate_44100_amplitude_1_end_on_sample_44100_min_frequency_1hz_max_frequency_20hz_linear_start_max_freq(self):
         #TODO
@@ -222,6 +228,9 @@ class MyTestCase(unittest.TestCase):
         audioSignalGenerator.add_signal(sinchirplin_frommax)
         audioSignalGenerator.generate_samples()
 
+        self.assertEqual(len(audioSignalGenerator.timestamps), 44101)
+
+
     def test_generate_chirp_sinus_sample_rate_44100_amplitude_1_end_on_sample_44100_min_frequency_1hz_max_frequency_20hz_log(self):
         #TODO
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
@@ -229,6 +238,9 @@ class MyTestCase(unittest.TestCase):
                                                 1, 20, frequency_variation='log')
         audioSignalGenerator.add_signal(sinchirplin_frommax)
         audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 44101)
+
 
 
     # Generate noises
@@ -261,6 +273,33 @@ class MyTestCase(unittest.TestCase):
         #plt.plot(audioSignalGenerator.timestamps, audioSignalGenerator.sample_values)
         #plt.show()
         # find the conditions to check if the noise is correct
+
+    def test_generate_gaussian_pink_noise_44100_16_500_samples(self): #TODO
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(44100, 16)
+        uniformpinknoise = Signal_GuassianWhiteNoise(44100, 0, 44100 * 4, 1)
+        audioSignalGenerator.add_signal(uniformpinknoise)
+        audioSignalGenerator.generate_samples()
+
+        # find the conditions to check if the noise is correct
+    def test_generate_gaussian_white_noise_sample_rate_16000_amplitude_01_duration_1s_normalized(self):
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(16000, 16)
+        gaus_white_noise = Signal_GuassianWhiteNoise(16000, 0, 16000, 0.1)
+        gaus_white_noise.forced_normalization = True
+        audioSignalGenerator.add_signal(gaus_white_noise)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 16001)
+
+        found_amplitude = False
+
+        for sample in audioSignalGenerator.sample_values:
+            self.assertLessEqual(sample, 0.1)
+            self.assertGreaterEqual(sample, -0.1)
+
+            if abs(sample) == 0.1:
+                found_amplitude = True
+
+        self.assertTrue(found_amplitude, True)
 
 
     # Save file
