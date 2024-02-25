@@ -80,5 +80,5 @@ class Signal(ABC):
 
         self.sample_values = self.sample_values * (self.max_amplitude/abs_max_sample)
 
-    def get_frequency(self):
+    def calculate_frequency(self):
         return Calculator.get_signal_frequency(self)
