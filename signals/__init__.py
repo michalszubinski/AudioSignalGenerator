@@ -3,4 +3,5 @@ __all__ = ["Signal", "Signal_Constant", "SignalPeriodic",
            "Signal_GaussianWhiteNoise", "SignalPeriodic_Square",
            "SignalPeriodic_Triangle", "SignalPeriodic_Sawtooth",
            "Signal_UniformPinkNoise", "SignalChirp",
-           "SignalChirp_Sinus"]
+           "SignalChirp_Sinus", "Signal_GaussianPinkNoise",
+           "SignalPeriodic_PulseWave"]
