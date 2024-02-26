@@ -22,6 +22,7 @@ class Signal(ABC):
     def generate(self):
         self.clear()
         current_sample_time = self.start_on_sample
+        self.before_generating_any_samples()
 
         while current_sample_time <= self.end_on_sample:
             self.change_values_before_generating_a_sample(current_sample_time)
@@ -83,3 +84,6 @@ class Signal(ABC):
 
     def calculate_frequency(self):
         return Calculator.get_signal_frequency(self)
+
+    def before_generating_any_samples(self):
+        pass
