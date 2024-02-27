@@ -8,6 +8,7 @@ import scipy
 
 import AudioSignalGenerator
 from signals.SignalChirp_Sinus import SignalChirp_Sinus
+from signals.SignalPeriodic_PulseWave import SignalPeriodic_PulseWave
 from signals.SignalPeriodic_Sawtooth import SignalPeriodic_Sawtooth
 from signals.SignalPeriodic_Sinus import SignalPeriodic_Sinus
 from signals.SignalPeriodic_Square import SignalPeriodic_Square
@@ -16,6 +17,7 @@ from signals.Signal_Constant import Signal_Constant
 from signals.Signal_GaussianWhiteNoise import Signal_GuassianWhiteNoise
 from signals.Signal_UniformPinkNoise import Signal_UniformPinkNoise
 from signals.Signal_UniformWhiteNoise import Signal_UniformWhiteNoise
+from signals.Signal_KroneckerDelta import Signal_KroneckerDelta
 from utilities.Calculator import Calculator
 from utilities.Converter import Converter
 from utilities.DBFS import DBFS
@@ -54,6 +56,19 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(len(audioSignalGenerator.timestamps), 4)
         self.assertEqual(audioSignalGenerator.sample_values, [0, 0.5, 0.5, 0.5])
         self.assertEqual(audioSignalGenerator.timestamps, [0, 1, 2, 3])
+
+    def test_signal_kronecker_delta_length_64_sample_rate_48000_amplitude_1(self):
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        kronecker = Signal_KroneckerDelta(48000, 0, 63, 1)
+        audioSignalGenerator.add_signal(kronecker)
+        audioSignalGenerator.generate_samples()
+
+        self.assertEqual(len(audioSignalGenerator.timestamps), 64)
+
+        self.assertEqual(audioSignalGenerator.sample_values[0], 1)
+
+        for i in range(1,63):
+            self.assertEqual(audioSignalGenerator.sample_values[i], 0)
 
     def test_generate_sinus_sample_rate_100_amplitude_1_end_on_sample_100(self):
         audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(100, 16)
@@ -240,6 +255,41 @@ class MyTestCase(unittest.TestCase):
         audioSignalGenerator.generate_samples()
 
         self.assertEqual(len(audioSignalGenerator.timestamps), 44101)
+
+    def test_generate_pulse_wave_sample_rate_48000_amplitude_1_duration_1s_frequency_4hz_duty_05(self):
+        #T0D0
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        pulsewave = SignalPeriodic_PulseWave(48000, 0, 48000, 1, 4, 0, 0.5)
+        audioSignalGenerator.add_signal(pulsewave)
+        audioSignalGenerator.generate_samples()
+
+    def test_generate_pulse_wave_sample_rate_48000_amplitude_1_duration_1s_frequency_4hz_duty_025(self):
+        #T0D0
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        pulsewave = SignalPeriodic_PulseWave(48000, 0, 48000, 1, 4, 0, 0.25)
+        audioSignalGenerator.add_signal(pulsewave)
+        audioSignalGenerator.generate_samples()
+
+    def test_generate_pulse_wave_sample_rate_48000_amplitude_1_duration_1s_frequency_4hz_duty_1(self):
+        #T0D0
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        pulsewave = SignalPeriodic_PulseWave(48000, 0, 48000, 1, 4, 0, 1)
+        audioSignalGenerator.add_signal(pulsewave)
+        audioSignalGenerator.generate_samples()
+
+    def test_generate_pulse_wave_sample_rate_48000_amplitude_1_duration_1s_frequency_4hz_duty_0(self):
+        #T0D0
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        pulsewave = SignalPeriodic_PulseWave(48000, 0, 48000, 1, 4, 0, 0)
+        audioSignalGenerator.add_signal(pulsewave)
+        audioSignalGenerator.generate_samples()
+
+    def test_generate_pulse_wave_sample_rate_48000_amplitude_1_duration_1s_frequency_4hz_duty_05_phase_3piover2(self):
+        #T0D0
+        audioSignalGenerator = AudioSignalGenerator.AudioSignalGenerator(48000, 16)
+        pulsewave = SignalPeriodic_PulseWave(48000, 0, 48000, 1, 4, 3*math.pi/2, 0.5)
+        audioSignalGenerator.add_signal(pulsewave)
+        audioSignalGenerator.generate_samples()
 
 
 
